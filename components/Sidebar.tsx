@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -20,6 +21,28 @@ const staffLinks = [
 export function Sidebar() {
   const { data: session, status } = useSession();
   const pathname = usePathname();
+  const [businessName, setBusinessName] = useState<string | null>(null);
+
+  useEffect(() => {
+    let ignore = false;
+
+    async function load() {
+      const res = await fetch("/api/business");
+      if (ignore) return;
+      if (res.ok) {
+        const data = await res.json();
+        setBusinessName(data.business?.name ?? null);
+      }
+    }
+
+    load();
+    // Refresh nama toko habis diganti dari settings tanpa reload halaman
+    window.addEventListener("business-updated", load);
+    return () => {
+      ignore = true;
+      window.removeEventListener("business-updated", load);
+    };
+  }, []);
 
   if (status !== "authenticated") return null;
 
@@ -30,7 +53,9 @@ export function Sidebar() {
     <aside className="w-56 shrink-0 border-r border-teal-800 bg-teal-900 text-teal-50 min-h-screen flex flex-col">
       <div className="p-4 border-b border-teal-800">
         <p className="font-bold text-white">Katalyst</p>
-        <p className="text-xs text-teal-200/70">{role === "OWNER" ? "Owner" : "Staff"} view</p>
+        {businessName && (
+          <p className="text-xs text-teal-100/90 truncate">{businessName}</p>
+        )}
       </div>
 
       <nav className="flex-1 p-2 space-y-1">
