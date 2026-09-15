@@ -1,36 +1,111 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Katalyst
 
-## Getting Started
+Business decision-support app untuk UMKM. Transaction → Insight → Simulation → Recommendation.
 
-First, run the development server:
+Ini **setup/scaffolding prototype**. Halaman sudah jalan dengan UI dasar (Tailwind polos, belum
+di-desain), auth sudah jalan, database schema sudah final. **Business logic (analytics engine,
+simulation engine, data fetching di tiap halaman) belum diimplementasikan** — itu next step.
+
+---
+
+## Cara Jalanin (Pertama Kali)
+
+```bash
+npm install
+npx prisma generate
+```
+
+Isi `.env` (copy dari `.env.example`):
+
+```
+DATABASE_URL=<connection string dari Neon>
+NEXTAUTH_SECRET=<hasil dari: openssl rand -base64 32>
+NEXTAUTH_URL=http://localhost:3000
+GROQ_API_KEY=<dari console.groq.com, opsional dulu>
+```
+
+Jalankan migration + seed:
+
+```bash
+npx prisma migrate dev --name init
+npx prisma db seed
+```
+
+Run dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Login dengan salah satu akun dummy (password sama-sama `password`):
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Role  | Email            |
+|-------|------------------|
+| Owner | owner@test.com   |
+| Staff | staff@test.com   |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Struktur Project
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/
+  login/                  - halaman login (SUDAH jalan)
+  dashboard/              - Owner only, UI skeleton (BELUM ada data)
+  products/               - Owner+Staff, UI skeleton (BELUM ada data)
+  products/[id]/          - detail produk, UI skeleton
+  transactions/           - Owner+Staff, UI skeleton
+  simulator/              - Owner only, UI skeleton
+  settings/               - Owner only, UI skeleton
+  api/auth/[...nextauth]/ - NextAuth config (SUDAH jalan)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+components/
+  Sidebar.tsx             - nav berbeda per role (SUDAH jalan)
+  ui/                     - Button, Input, Card, Badge, Table (plain Tailwind, bukan shadcn)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+lib/
+  db.ts                   - Prisma client singleton (SUDAH jalan)
+  utils.ts                - formatRupiah, formatPercent, cn()
+  analytics.ts            - BELUM ADA, lihat "Next Steps"
+  simulation.ts           - BELUM ADA, lihat "Next Steps"
 
-## Deploy on Vercel
+prisma/
+  schema.prisma           - schema final (jangan diubah struktur field tanpa diskusi)
+  seed.ts                 - generate ~270 transaksi dummy across 8 produk
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Next Steps (Belum Dikerjakan)
+
+Dikerjakan terpisah karena butuh ketelitian ekstra pada perhitungan bisnis:
+
+1. **`lib/analytics.ts`** — revenue, profit, margin, top products, business insights.
+   Ada 3 acceptance test case yang harus dicocokkan persis sebelum dianggap selesai.
+2. **`lib/simulation.ts`** — what-if engine (ubah harga/diskon/cost → dampak ke profit).
+   Juga ada acceptance test case.
+3. Wire kedua engine di atas ke halaman `/dashboard` dan `/simulator` (ganti placeholder `—`
+   dengan data asli).
+4. API routes untuk create transaction (`/api/transactions`) dan create product (`/api/products`).
+5. Copilot (bisa mulai dari preset button yang manggil fungsi di atas, belum perlu full LLM loop).
+
+**Jangan mulai kerjain nomor 1-2 sebelum baca spec engine yang sudah ada** — di situ ada definisi
+insight rules dan angka acceptance test yang harus dicocokkan, supaya semua developer menghasilkan
+angka yang sama persis.
+
+---
+
+## Kredensial Dev (Hardcoded — JANGAN dipakai di production)
+
+Login saat ini pakai email/password hardcoded di
+`app/api/auth/[...nextauth]/route.ts` (`owner@test.com` / `staff@test.com`, password `password`
+untuk keduanya). Ini sengaja disederhanakan untuk kecepatan development. Ganti ke password hashing
+asli sebelum dipakai di luar testing internal.
+
+---
+
+## Git History
+
+Repo ini sudah di-`git init` dengan commit bertahap per fitur (`git log --oneline` untuk lihat).
+Lanjutkan pola ini — 1 commit per fitur/task, bukan 1 commit besar di akhir hari. Ini bikin gampang
+tahu siapa ngerjain apa dan gampang di-revert kalau ada yang break.
