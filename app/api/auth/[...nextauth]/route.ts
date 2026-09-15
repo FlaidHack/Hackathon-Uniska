@@ -1,6 +1,7 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 
 export const authOptions: NextAuthOptions = {
@@ -13,27 +14,18 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        // TEMPORARY hardcoded check untuk MVP hackathon.
-        // Ganti dengan password hash asli sebelum ini dipakai serius.
-        if (
-          credentials?.email === "owner@test.com" &&
-          credentials?.password === "password"
-        ) {
-          const user = await db.user.findUnique({
-            where: { email: "owner@test.com" },
-          });
-          return user ?? null;
-        }
-        if (
-          credentials?.email === "staff@test.com" &&
-          credentials?.password === "password"
-        ) {
-          const user = await db.user.findUnique({
-            where: { email: "staff@test.com" },
-          });
-          return user ?? null;
-        }
-        return null;
+        if (!credentials?.email || !credentials?.password) return null;
+
+        const user = await db.user.findUnique({
+          where: { email: credentials.email },
+        });
+
+        if (!user || !user.password) return null;
+
+        const isValid = await bcrypt.compare(credentials.password, user.password);
+        if (!isValid) return null;
+
+        return user;
       },
     }),
   ],
@@ -43,6 +35,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.role = user.role;
         token.id = user.id;
+        token.businessId = user.businessId;
       }
       return token;
     },
@@ -50,6 +43,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.role = token.role;
         session.user.id = token.id;
+        session.user.businessId = token.businessId;
       }
       return session;
     },

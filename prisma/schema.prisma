@@ -16,6 +16,7 @@ model User {
   id           String        @id @default(cuid())
   email        String?       @unique
   name         String?
+  password     String?       // bcrypt hash. Null untuk user lama/OAuth (tidak dipakai di MVP ini).
   role         Role          @default(OWNER)
   businessId   String?
   business     Business?     @relation(fields: [businessId], references: [id])

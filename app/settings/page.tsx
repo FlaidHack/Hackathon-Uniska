@@ -1,8 +1,9 @@
 import { Card, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { StaffManager } from "@/components/StaffManager";
 
-// TODO: business profile update, staff management CRUD
+// TODO: business profile update masih placeholder
 export default function SettingsPage() {
   return (
     <div className="p-6 max-w-2xl mx-auto space-y-6">
@@ -16,10 +17,7 @@ export default function SettingsPage() {
         </div>
       </Card>
 
-      <Card>
-        <CardTitle>Staff</CardTitle>
-        <p className="text-sm text-gray-400 mt-2">Belum ada data staff.</p>
-      </Card>
+      <StaffManager />
     </div>
   );
 }

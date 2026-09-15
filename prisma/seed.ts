@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const db = new PrismaClient();
 
@@ -27,29 +28,33 @@ function randomQty(): number {
 async function main() {
   console.log("Seeding Katalyst dummy data...");
 
+  const defaultPasswordHash = await bcrypt.hash("password", 10);
+
   const business = await db.business.create({
     data: { name: "Kedai Kopi Nusantara" },
   });
 
   const owner = await db.user.upsert({
     where: { email: "owner@test.com" },
-    update: { role: "OWNER", businessId: business.id },
+    update: { role: "OWNER", businessId: business.id, password: defaultPasswordHash },
     create: {
       email: "owner@test.com",
       name: "Owner Demo",
       role: "OWNER",
       businessId: business.id,
+      password: defaultPasswordHash,
     },
   });
 
   const staff = await db.user.upsert({
     where: { email: "staff@test.com" },
-    update: { role: "STAFF", businessId: business.id },
+    update: { role: "STAFF", businessId: business.id, password: defaultPasswordHash },
     create: {
       email: "staff@test.com",
       name: "Budi (Staff)",
       role: "STAFF",
       businessId: business.id,
+      password: defaultPasswordHash,
     },
   });
 
