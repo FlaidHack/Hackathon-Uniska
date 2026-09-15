@@ -9,7 +9,7 @@ export function Table({ className, ...props }: HTMLAttributes<HTMLTableElement>)
   );
 }
 export function Thead({ className, ...props }: HTMLAttributes<HTMLTableSectionElement>) {
-  return <thead className={cn("bg-gray-50", className)} {...props} />;
+  return <thead className={cn("bg-slate-50", className)} {...props} />;
 }
 export function Th({ className, ...props }: ThHTMLAttributes<HTMLTableCellElement>) {
   return (

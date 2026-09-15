@@ -11,11 +11,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="id">
-      <body className="antialiased bg-gray-50">
+      <body className="antialiased bg-slate-100">
         <SessionProviderWrapper>
           <div className="flex">
             <Sidebar />
-            <main className="flex-1 min-h-screen">{children}</main>
+            <main className="flex-1 min-h-screen bg-slate-100">{children}</main>
           </div>
         </SessionProviderWrapper>
       </body>

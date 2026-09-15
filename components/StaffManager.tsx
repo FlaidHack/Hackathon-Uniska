@@ -108,9 +108,6 @@ export function StaffManager() {
         <Button onClick={handleAddStaff} disabled={submitting}>
           {submitting ? "Menyimpan..." : "+ Tambah Staff"}
         </Button>
-        <p className="text-xs text-gray-400">
-          Beri tahu staff password awal ini secara manual — belum ada flow reset password.
-        </p>
       </div>
     </Card>
   );

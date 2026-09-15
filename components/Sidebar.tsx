@@ -27,10 +27,10 @@ export function Sidebar() {
   const links = role === "OWNER" ? ownerLinks : staffLinks;
 
   return (
-    <aside className="w-56 shrink-0 border-r border-gray-200 bg-white min-h-screen flex flex-col">
-      <div className="p-4 border-b border-gray-200">
-        <p className="font-bold text-gray-900">Katalyst</p>
-        <p className="text-xs text-gray-400">{role === "OWNER" ? "Owner" : "Staff"} view</p>
+    <aside className="w-56 shrink-0 border-r border-teal-800 bg-teal-900 text-teal-50 min-h-screen flex flex-col">
+      <div className="p-4 border-b border-teal-800">
+        <p className="font-bold text-white">Katalyst</p>
+        <p className="text-xs text-teal-200/70">{role === "OWNER" ? "Owner" : "Staff"} view</p>
       </div>
 
       <nav className="flex-1 p-2 space-y-1">
@@ -41,8 +41,8 @@ export function Sidebar() {
             className={cn(
               "block px-3 py-2 rounded-md text-sm font-medium",
               pathname.startsWith(link.href)
-                ? "bg-teal-50 text-teal-700"
-                : "text-gray-600 hover:bg-gray-50"
+                ? "bg-white/15 text-white font-semibold"
+                : "text-teal-100/80 hover:bg-white/10 hover:text-white"
             )}
           >
             {link.label}
@@ -50,10 +50,10 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="p-2 border-t border-gray-200">
+      <div className="p-2 border-t border-teal-800">
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="w-full text-left px-3 py-2 rounded-md text-sm text-gray-500 hover:bg-gray-50"
+          className="w-full text-left px-3 py-2 rounded-md text-sm text-teal-100/70 hover:bg-white/10 hover:text-white"
         >
           Logout
         </button>
