@@ -1,8 +1,13 @@
 import { withAuth } from "next-auth/middleware";
 import { NextRequest, NextResponse } from "next/server";
 
+// Next.js 16+ renamed the "middleware" file convention to "proxy".
+// A file named middleware.ts is silently ignored on this Next version (no
+// build error, no warning) — it MUST be named proxy.ts or this protection
+// layer does nothing and every "Owner only" route becomes public.
+// See: https://nextjs.org/docs/messages/middleware-to-proxy
 export default withAuth(
-  function middleware(req: NextRequest) {
+  function proxy(req: NextRequest) {
     // @ts-expect-error - nextauth is injected by withAuth wrapper
     const token = req.nextauth?.token;
     const ownerOnlyPaths = ["/dashboard", "/simulator", "/settings"];

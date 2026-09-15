@@ -95,6 +95,22 @@ angka yang sama persis.
 
 ---
 
+## ⚠️ Next.js 16 — `proxy.ts`, BUKAN `middleware.ts`
+
+Project ini pakai Next.js 16, yang **mendeprecate file convention `middleware.ts`** dan
+menggantinya dengan `proxy.ts`. Kalau ada yang gak sengaja bikin ulang/rename jadi
+`middleware.ts` di masa depan (misal copy-paste dari tutorial lama atau dari AI yang
+trainingnya sebelum perubahan ini) — **file itu akan di-skip diam-diam saat build, TANPA
+error dan TANPA warning.** Efeknya: semua proteksi role (Owner-only ke Dashboard/Simulator/
+Settings) tembus, siapa aja bisa akses.
+
+Cara ngecek kalau ragu: jalankan `npm run build`, lihat route table di outputnya — harus ada
+baris `ƒ Proxy (Middleware)`. Kalau gak ada baris itu, proteksi role gak aktif.
+
+Sebagai lapisan aman tambahan, jangan cuma andalkan `proxy.ts` — tiap API route yang sensitif
+(transactions, products dengan cost price) tetap harus cek `session.user.role` sendiri di
+server, bukan cuma percaya request itu udah difilter di proxy.
+
 ## Kredensial Dev (Hardcoded — JANGAN dipakai di production)
 
 Login saat ini pakai email/password hardcoded di
